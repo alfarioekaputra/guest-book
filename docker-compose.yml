@@ -1,0 +1,35 @@
+services:
+  web:
+    build:
+      context: ./docker/php
+    container_name: guestbook-web
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - db
+    networks:
+      - guestbook-network
+
+  db:
+    build:
+      context: ./docker/mysql
+    container_name: guestbook-db
+    ports:
+      - "3309:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: guestbook_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - guestbook-network
+
+volumes:
+  db-data:
+
+networks:
+  guestbook-network:
