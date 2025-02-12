@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<?= csrf_hash() ?>">
   <title>Admin - Buku Tamu</title>
 
   <!-- Bootstrap CSS -->
@@ -72,10 +73,7 @@
           <?php if (auth()->user()): ?>
             <div class="nav-item dropdown">
               <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown" aria-label="Open user menu">
-                <span class="avatar avatar-sm" style="background-image: url(https://ui-avatars.com/api/?name=<?= auth()->user()->username; ?>)"></span>
-                <div class="d-none d-xl-block ps-2">
-                  <div><?= auth()->user()->username; ?></div>
-                </div>
+                <div><?= auth()->user()->username; ?></div>
               </a>
               <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                 <a href="#" class="dropdown-item">Status</a>
@@ -95,36 +93,42 @@
     <div class="page-wrapper">
       <div class="page-body">
         <div class="container-xl">
-          <?= $this->renderSection('content') ?>
-        </div>
-      </div>
-      <footer class="footer footer-transparent d-print-none">
-        <div class="container-xl">
-          <div class="row text-center align-items-center flex-row">
-
-            <div class="col-12 col-lg-auto mt-3 mt-lg-0">
-              <ul class="list-inline list-inline-dots mb-0">
-                <li class="list-inline-item">
-                  Copyright © 2025
-                  <a href="." class="link-secondary">Buku Tamu</a>.
-                  All rights reserved.
-                </li>
-              </ul>
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <?= $this->include('alert') ?>
+                <?= $this->renderSection('content') ?>
+              </div>
             </div>
           </div>
         </div>
-      </footer>
+        <footer class="footer footer-transparent d-print-none">
+          <div class="container-xl">
+            <div class="row text-center align-items-center flex-row">
+
+              <div class="col-12 col-lg-auto mt-3 mt-lg-0">
+                <ul class="list-inline list-inline-dots mb-0">
+                  <li class="list-inline-item">
+                    Copyright © 2025
+                    <a href="." class="link-secondary">Buku Tamu</a>.
+                    All rights reserved.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+
     </div>
 
-  </div>
+    <!-- Jquery dan Bootsrap JS -->
+    <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
 
-  <!-- Jquery dan Bootsrap JS -->
-  <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.7.1.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0/dist/js/tabler.min.js"></script>
-  <script type="text/javascript" src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
-
-  <?= $this->renderSection('javascript') ?>
+    <?= $this->renderSection('javascript') ?>
 
 </body>
 
