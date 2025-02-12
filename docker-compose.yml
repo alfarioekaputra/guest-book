@@ -1,35 +1,45 @@
 services:
-  web:
+  app:
     build:
-      context: ./docker/php
-    container_name: guestbook-web
-    ports:
-      - "8080:80"
+      context: .
+      dockerfile: ./docker/php/Dockerfile
     volumes:
       - .:/var/www/html
-    depends_on:
-      - db
+    command: >
+      sh -c "php spark serve --host 0.0.0.0 --port 8081"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(`guest-book.test`)"
+      - "traefik.http.services.app.loadbalancer.server.port=8081"
     networks:
-      - guestbook-network
+      - traefik_network
+    environment:
+      - APP_ENV=development
+      - DB_HOST=mysql
+      - DB_DATABASE=guestbook_db
+      - DB_USERNAME=guestbook
+      - DB_PASSWORD=12345
+    depends_on:
+      - mysql
 
-  db:
-    build:
-      context: ./docker/mysql
-    container_name: guestbook-db
+  mysql:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: guestbook_db
+      MYSQL_USER: guestbook
+      MYSQL_PASSWORD: 12345
     ports:
       - "3309:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: guestbook_db
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
     volumes:
-      - db-data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
     networks:
-      - guestbook-network
+      - traefik_network
 
 volumes:
-  db-data:
+  mysql_data:
 
 networks:
-  guestbook-network:
+  traefik_network:
+    external: true
