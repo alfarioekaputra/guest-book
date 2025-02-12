@@ -1,29 +1,54 @@
-FROM php:8.4-apache
+# Stage 1: Build stage (optional if you need to compile assets)
+FROM composer:2 AS composer
 
-# Install extensions
-RUN apt-get update && apt-get install -y zlib1g-dev libicu-dev g++ git unzip libzip-dev
-RUN docker-php-ext-configure intl
-RUN docker-php-ext-install mysqli pdo pdo_mysql intl zip
+# Stage 2: Final runtime image
+FROM php:8.4-cli-alpine AS runtime
 
-# Enable mod_rewrite
-RUN a2enmod rewrite
+# Set environment variables
+ENV COMPOSER_ALLOW_SUPERUSER=1 \
+  APP_ENV=development
 
-# Set document root ke folder public
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# Install necessary system dependencies
+RUN apk add --no-cache \
+  bash \
+  git \
+  curl \
+  libzip-dev \
+  libpng-dev \
+  libjpeg-turbo-dev \
+  freetype-dev \
+  icu-dev \
+  oniguruma-dev \
+  libxml2-dev \
+  && docker-php-ext-configure gd --with-freetype --with-jpeg \
+  && docker-php-ext-install -j$(nproc) \
+  gd \
+  pdo_mysql \
+  mysqli \
+  zip \
+  intl \
+  opcache \
+  mbstring \
+  xml
 
-# Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Copy Composer from the build stage
+COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy project files
+# Copy application code
 COPY . .
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Install Composer dependencies (jika ada composer.json)
-RUN if [ -f "composer.json" ]; then composer install --no-dev --optimize-autoloader; fi
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html \
+  && chmod -R 755 /var/www/html
+
+# Expose port (if needed for a web server)
+# EXPOSE 8081
+
+# Start the application (e.g., using PHP built-in server for development)
+# CMD ["php", "spark", "serve", "--host 0.0.0.0", "--port 8081"]
