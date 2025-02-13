@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\Shield\Models\UserModel as ShieldUserModel;
 
 class UserModel extends ShieldUserModel
