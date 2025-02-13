@@ -2,12 +2,12 @@
 
 namespace App\Controllers;
 
+use App\Libraries\TwigLib;
 use App\Models\UserModel;
-use CodeIgniter\Controller;
-use CodeIgniter\Shield\Entities\User;
+use CodeIgniter\Shield\Entities\User as UserEntity;
 use Config\Services;
 
-class UsersController extends Controller
+class User extends BaseController
 {
   protected $request;
   protected $model;
@@ -22,7 +22,7 @@ class UsersController extends Controller
 
   public function index()
   {
-    return view('users/index');
+    return $this->twig->render('user/index.html.twig');
   }
 
   public function ajaxList()
@@ -58,11 +58,11 @@ class UsersController extends Controller
     return json_encode($output);
   }
 
-  public function new()
+  public function create()
   {
     helper('form');
 
-    return view('users/new');
+    return $this->twig->render('user/create');
   }
 
   public function store()
@@ -72,14 +72,14 @@ class UsersController extends Controller
 
     // Get the User Provider (UserModel by default)
 
-    $user = new User($data);
+    $user = new UserEntity($data);
 
     if ($this->users->save($user)) {
       $user = $this->users->findById($this->users->getInsertID());
       $user->activate();
 
       session()->setFlashdata('success', 'Berhasil Tambah Pengguna');
-      return redirect()->to('/users');
+      return redirect()->to('/user');
     }
 
     return false;
@@ -87,15 +87,15 @@ class UsersController extends Controller
 
   public function edit($id)
   {
-    helper('form');
+    // helper('form');
 
     $user = $this->users->findById($id);
 
     if (!$user) {
-      return redirect()->to('/users')->with('error', 'Pengguna tidak ditemukan.');
+      return redirect()->to('/user')->with('error', 'Pengguna tidak ditemukan.');
     }
 
-    return view('users/edit', ['user' => $user]);
+    return $this->twig->render('user/edit', ['user' => $user]);
   }
 
   public function update($id)
@@ -123,7 +123,7 @@ class UsersController extends Controller
 
     //update pengguna
     if ($this->model->update($id, $data)) {
-      return redirect()->to('/users')->with('success', 'Pengguna berhasil diperbarui.');
+      return redirect()->to('/user')->with('success', 'Pengguna berhasil diperbarui.');
     } else {
       return redirect()->back()->withInput()->with('errors', $this->model->errors());
     }
@@ -134,6 +134,6 @@ class UsersController extends Controller
     // Hapus pengguna berdasarkan ID
     $this->model->delete($id);
 
-    return redirect()->to('/users')->with('success', 'Berhasil Hapus Pengguna');
+    return redirect()->to('/user')->with('success', 'Berhasil Hapus Pengguna');
   }
 }
