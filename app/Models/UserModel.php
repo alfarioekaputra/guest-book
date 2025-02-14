@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Traits\DataTablesTrait;
 use CodeIgniter\Shield\Models\UserModel as ShieldUserModel;
 
 class UserModel extends ShieldUserModel
 {
-  public $builder;
+  use DataTablesTrait;
+
+  protected $table = 'users';
 
   protected function initialize(): void
   {
@@ -21,68 +24,61 @@ class UserModel extends ShieldUserModel
     ];
   }
 
-  protected function _get_datatables_query($table, $column_order, $column_search, $order)
+  public function getData()
   {
-    $this->builder = $this->db->table($table);
-    //jika ingin join formatnya adalah sebagai berikut :
-    $this->builder->join('auth_identities', 'auth_identities.user_id = users.id', 'left');
-    //end Join
-    $i = 0;
+    $column_order = ['name'];
+    $column_search = ['name'];
+    $order = ['id' => 'DESC'];
+    $where = ['active =' => 1, 'deleted_at' => null];
 
-    foreach ($column_search as $item) {
-      if ($_POST['search']['value']) {
+    //column_order Harus Sesuai Urutan Kolom Pada Header Tabel di bagian View
+    //Awali nama kolom tabel dengan nama tabel->tanda titik->nama kolom seperti pengguna.nama
+    $column_order = array('users.username', 'auth_identities.secret');
+    $column_search = array('users.username');
+    $order = array('users.username' => 'asc');
 
-        if ($i === 0) {
-          $this->builder->groupStart();
-          $this->builder->like($item, $_POST['search']['value']);
-        } else {
-          $this->builder->orLike($item, $_POST['search']['value']);
-        }
+    // Contoh penggunaan join
+    $joins = [
+      [
+        'table' => 'auth_identities',
+        'condition' => 'auth_identities.user_id = users.id',
+        'type' => 'left'
+      ]
+    ];
 
-        if (count($column_search) - 1 == $i)
-          $this->builder->groupEnd();
-      }
-      $i++;
+    $list = $this->getDataTables(
+      $this->table,
+      $column_order,
+      $column_search,
+      $order,
+      $where, // where condition (optional)
+      $joins // joins (optional)
+    );
+
+    $data = [];
+    foreach ($list as $key => $user) {
+      $row = [];
+      $row['no'] = $key + 1;
+      $row['id'] = $user->id;
+      $row['username'] = $user->username;
+      $row['email'] = $user->secret;
+      $data[] = $row;
     }
 
-    if (isset($_POST['order'])) {
-      $this->builder->orderBy($column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
-    } else if (isset($order)) {
-      $order = $order;
-      $this->builder->orderBy(key($order), $order[key($order)]);
-    }
-  }
+    $output = [
+      "draw" => $_POST['draw'],
+      "recordsTotal" => $this->countAll($this->table, '', $joins),
+      "recordsFiltered" => $this->countFiltered(
+        $this->table,
+        $column_order,
+        $column_search,
+        $order,
+        $where,
+        $joins
+      ),
+      "data" => $data
+    ];
 
-  public function get_datatables($table, $column_order, $column_search, $order, $data = '')
-  {
-    $this->_get_datatables_query($table, $column_order, $column_search, $order);
-    if ($_POST['length'] != -1)
-      $this->builder->limit((int)$_POST['length'], (int)$_POST['start']);
-    if ($data) {
-      $this->builder->where($data);
-    }
-
-    $query = $this->builder->get();
-    return $query->getResult();
-  }
-
-  public function count_filtered($table, $column_order, $column_search, $order, $data = '')
-  {
-    $this->_get_datatables_query($table, $column_order, $column_search, $order);
-    if ($data) {
-      $this->builder->where($data);
-    }
-    $this->builder->get();
-    return $this->builder->countAll();
-  }
-
-  public function count_all($table, $data = '')
-  {
-    if ($data) {
-      $this->builder->where($data);
-    }
-    $this->builder->from($table);
-
-    return $this->builder->countAll();
+    return $output;
   }
 }

@@ -73,7 +73,7 @@ class TwigLib
           'base_url',
           'current_url',
           'uri_string',
-          'index_page'
+          'index_page',
         ])
       ) {
         $this->twig->addFunction(
@@ -97,6 +97,12 @@ class TwigLib
     $this->twig->addFunction(
       new \Twig\TwigFunction('isset', function ($key) {
         return isset($key);
+      })
+    );
+
+    $this->twig->addFunction(
+      new \Twig\TwigFunction('str_contains', function ($string, $key) {
+        return str_contains($string, $key);
       })
     );
 

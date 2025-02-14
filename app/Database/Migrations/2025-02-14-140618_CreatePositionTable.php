@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateReferenceTable extends Migration
+class CreatePositionTable extends Migration
 {
   public function up()
   {
@@ -38,11 +38,11 @@ class CreateReferenceTable extends Migration
     ]);
 
     $this->forge->addKey('id', true);
-    $this->forge->createTable('m_reference');
+    $this->forge->createTable('positions');
   }
 
   public function down()
   {
-    $this->forge->dropTable('m_reference');
+    $this->forge->dropTable('positions');
   }
 }
