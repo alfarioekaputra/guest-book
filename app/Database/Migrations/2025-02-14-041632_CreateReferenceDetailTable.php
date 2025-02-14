@@ -26,27 +26,44 @@ class CreateReferenceDetailTable extends Migration
       ],
       'extrafield_1' => [
         'type' => 'VARCHAR',
-        'constraint' => '255'
+        'constraint' => '255',
+        'null'       => true
       ],
       'extrafield_2' => [
         'type' => 'VARCHAR',
-        'constraint' => '255'
+        'constraint' => '255',
+        'null'       => true
       ],
-      'extrafield_2' => [
+      'extrafield_3' => [
         'type' => 'VARCHAR',
-        'constraint' => '255'
+        'constraint' => '255',
+        'null'       => true
       ],
       'order' => [
         'type' => 'TINYINT',
-        'constraint' => '1'
+        'constraint' => '1',
+        'default' => 0
       ],
       'status' => [
         'type' => 'TINYINT',
-        'constraint' => '1'
+        'constraint' => '1',
+        'default' => 1
       ],
       'slug' => [
         'type' => 'VARCHAR',
         'constraint' => '255'
+      ],
+      'created_at' => [
+        'type'    => 'DATETIME',
+        'null'    => true
+      ],
+      'updated_at' => [
+        'type'    => 'DATETIME',
+        'null'    => true
+      ],
+      'deleted_at' => [
+        'type'    => 'DATETIME',
+        'null'    => true
       ]
     ]);
 
