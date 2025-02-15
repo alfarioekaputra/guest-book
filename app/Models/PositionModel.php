@@ -14,7 +14,7 @@ class PositionModel extends Model
   protected $primaryKey       = 'id';
   protected $useAutoIncrement = true;
   protected $returnType       = 'array';
-  protected $useSoftDeletes   = false;
+  protected $useSoftDeletes   = true;
   protected $createdField     = 'created_at';
   protected $updatedField     = 'updated_at';
   protected $deletedField     = 'deleted_at';

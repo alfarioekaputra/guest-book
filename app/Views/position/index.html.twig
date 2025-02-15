@@ -10,30 +10,22 @@
     </div>
     <div class="col-auto ms-auto">
       <div class="btn-list">
-        <a href="{{ url_to('Position::create')  }}" class="btn btn-primary d-none d-sm-inline-block">
-          <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
-            stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <button type="button" class="btn btn-primary" onclick="openGlobalModal('{{ url_to('Position::new') }}', 'Tambah Data', '{{ url_to('Position::store') }}')">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2"
+            stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <path stroke="none" d="M0 0h24v24H0z" fill="none" />
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
-          Tambah Jabatan
-        </a>
-        <a href="#" class="btn btn-primary d-sm-none btn-icon" data-bs-toggle="modal" data-bs-target="#modal-report"
-          aria-label="Create new report">
-          <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
-            stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-        </a>
+          Tambah Data
+        </button>
       </div>
     </div>
   </div>
 </div>
+
 <div class="table-responsive mt-5">
-  <table id="position-table" class="table">
+  <table id="dataTable" class="table">
     <thead class="sticky-top">
       <tr>
         <th>NO</th>
@@ -62,7 +54,7 @@
       }
     });
 
-    var table = $('#position-table').DataTable({
+    window.dataTable = $('#dataTable').DataTable({
       "processing": true,
       "serverSide": true,
       "ordering": true,
@@ -110,13 +102,65 @@
         render: function (data, type, row) {
 
           return `
-                <a href="/position/${row.id}/edit" class="btn btn-md btn-primary">Edit</a>
-                <a href="/position/${row.id}/delete" class="btn btn-md btn-danger" onclick="return confirm('Yakin ingin menghapus?')">Delete</a>
+                <a class="btn btn-md btn-primary" onclick="openGlobalModal('{{ site_url('admin/master/position') }}/${row.id}/edit', 'Edit Data', '{{ url_to('Position::store') }}')">Edit</a>
+                <a class="btn btn-md btn-danger" onclick="deleteData(${row.id})">Delete</a>
               `
         }
       }
       ]
     });
+
+    // Fungsi untuk menghapus data dengan Bootbox
+    window.deleteData = function(id) {
+        bootbox.confirm({
+            title: "Konfirmasi Hapus",
+            message: "Apakah Anda yakin? Data yang dihapus tidak dapat dikembalikan!",
+            buttons: {
+                cancel: {
+                    label: '<i class="fa fa-times"></i> Batal',
+                    className: 'btn-secondary'
+                },
+                confirm: {
+                    label: '<i class="fa fa-check"></i> Ya, hapus!',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function(result) {
+                if (result) {
+                    $.ajax({
+                        url: "{{ site_url('admin/master/position/') }}/" + id,
+                        type: 'DELETE',
+                        headers: {
+                          'X-CSRF-TOKEN': csrfToken
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                bootbox.alert({
+                                    title: "Terhapus!",
+                                    message: response.message,
+                                    callback: function() {
+                                        $('#dataTable').DataTable().ajax.reload();
+                                    }
+                                });
+                            } else {
+                                bootbox.alert({
+                                    title: "Error!",
+                                    message: response.message
+                                });
+                            }
+                        },
+                        error: function() {
+                            bootbox.alert({
+                                title: "Error!",
+                                message: "Terjadi kesalahan pada server"
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    };
   });
 </script>
 {% endblock javascript %}
