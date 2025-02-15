@@ -93,6 +93,11 @@ class TwigLib
         return csrf_hash();
       })
     );
+    $this->twig->addFunction(
+      new \Twig\TwigFunction('csrf_token', function () {
+        return csrf_token();
+      })
+    );
 
     $this->twig->addFunction(
       new \Twig\TwigFunction('isset', function ($key) {
