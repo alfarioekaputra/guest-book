@@ -18,21 +18,10 @@ $routes->group('admin', static function ($routes) {
     $routes->post('position/ajaxList', 'Position::ajaxList');
 
     $routes->resource('identity');
+    $routes->post('identity/store', 'Identity::store');
     $routes->post('identity/ajaxList', 'Identity::ajaxList');
   });
 });
-//pengguna
-// $routes->get('/user', 'User::index');
-// $routes->get('/user/create', 'User::create');
-// $routes->post('/user/store', 'User::store');
-// $routes->get('/user/(:num)/edit', 'User::edit/$1');
-// $routes->post('/user/(:num)/update', 'User::update/$1');
-// $routes->get('/user/(:num)/delete', 'User::delete/$1');
 
-
-//reference
-// $routes->get('/reference', 'Reference::index');
-// $routes->post('/reference/ajaxList', 'Reference::ajaxList');
-// $routes->post('/reference/create', 'Reference::create');
 
 service('auth')->routes($routes);

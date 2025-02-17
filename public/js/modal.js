@@ -1,6 +1,7 @@
 $(function() {
     // Function to open modal with form content
-    window.openGlobalModal = function(url, title, submitUrl) {
+    window.openGlobalModal = function (url, title, submitUrl) {
+        console.log(url)
         $('#globalModalLabel').text(title);
         
         // Reset form and set the correct submit URL
@@ -12,8 +13,17 @@ $(function() {
         }
         $('#globalModalContent').html('<div class="text-center"><div class="spinner-border text-primary" role="status"></div></div>');
         
+        $('#error-message').addClass("d-none");
+        $('.simpan').removeClass("d-none");
         // Load form content
-        $.get(url, function(data) {
+        $.get(url, function (data) {
+            console.log(data);
+            if (data.success === false) {
+                $('#error-message').removeClass("d-none");
+                $('#error-message').text(data.message);
+                $('.simpan').addClass("d-none");
+            }
+
             $('#globalModalContent').html(data);
 
         });
@@ -25,7 +35,7 @@ $(function() {
     $('#globalForm').on('submit', function(e) {
         e.preventDefault();
         
-        const csrfToken = $('meta[name="csrf-token"]').attr('content');
+         const csrfToken = $('meta[name="csrf-token"]').attr('content');
         var form = $(this);
         var url = form.attr('action');
         
@@ -46,11 +56,7 @@ $(function() {
                         title: "Berhasil",
                         message: response.message,
                         callback: function() {
-                            // Refresh data table if exists
-                            if (typeof dataTable !== 'undefined') {
-                                dataTable.ajax.reload();
-                            }
-                            
+                            //refreh datatable
                             $('#dataTable').DataTable().ajax.reload();
 
                             // Close modal
@@ -73,17 +79,4 @@ $(function() {
             }
         });
     });
-
-    // Function to update CSRF token
-    function updateCsrfToken() {
-        // Check if response header contains new CSRF token
-        var csrfName = $('.csrf_token').attr('name');
-        var csrfHash = $('.csrf_token').val();
-        
-        // If we have CSRF token in the response
-        if (typeof csrfHash !== 'undefined') {
-            // Update all CSRF tokens in the form
-            $('.csrf_token').val(csrfHash);
-        }
-    }
 });

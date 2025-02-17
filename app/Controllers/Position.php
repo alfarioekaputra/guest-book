@@ -16,7 +16,12 @@ class Position extends BaseController
 
   public function index()
   {
-    return $this->twig->render('position/index');
+    $data = [
+      'new' => url_to('Identity::new'),
+      'store' => url_to('Identity::store')
+    ];
+
+    return $this->twig->render('position/index', $data);
   }
 
   public function ajaxList()
@@ -28,10 +33,10 @@ class Position extends BaseController
 
   public function new()
   {
-    // Jika request AJAX, kembalikan hanya konten form
-    if ($this->request->isAJAX()) {
+    if ($this->request->isAJAX())
       return $this->twig->render('position/new');
-    }
+
+    return $this->displayError403();
   }
 
   // Menampilkan form edit
@@ -46,10 +51,10 @@ class Position extends BaseController
       ]);
     }
 
-    // Jika request AJAX, kembalikan hanya konten form
-    if ($this->request->isAJAX()) {
-      return $this->twig->render('position/edit', $data);
-    }
+    if ($this->request->isAJAX())
+      return $this->twig->render('identity/edit', $data);
+
+    return $this->displayError403();
   }
 
   // Menyimpan data (add/update)

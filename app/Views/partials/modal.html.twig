@@ -7,18 +7,16 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="globalForm" method="post">
-            {# {{ form_open('', {'id': 'globalForm', 'method': 'post'})|raw }} #}
-                {# <input type="hidden" name="{{ csrf_token() }}" value="{{ csrf_hash() }}" class="csrf_token"> #}
                 <div class="modal-body">
+                    <p id="error-message"></p>
                     <div id="globalModalContent">
                         <!-- Content will be loaded here -->
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <button type="submit" class="simpan btn btn-primary">Simpan</button>
                 </div>
-            {# {{ form_close()|raw }} #}
             </form>
         </div>
     </div>
