@@ -90,5 +90,5 @@ class Autoload extends AutoloadConfig
    *
    * @var list<string>
    */
-  public $helpers = ['auth', 'setting', 'form', 'old'];
+  public $helpers = ['auth', 'setting', 'form', 'old', 'date_now_with_timezone'];
 }
