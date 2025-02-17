@@ -25,7 +25,7 @@ class PositionModel extends Model
   {
     $column_order = ['name'];
     $column_search = ['name'];
-    $order = ['id' => 'DESC'];
+    $order = ['id' => 'ASC'];
     $where = ['deleted_at' => null];
 
     // Contoh penggunaan join

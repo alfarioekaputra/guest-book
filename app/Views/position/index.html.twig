@@ -57,7 +57,7 @@
     window.dataTable = $('#dataTable').DataTable({
       "processing": true,
       "serverSide": true,
-      "ordering": true,
+      "ordering": false,
       "scrollX": true,
       "oLanguage": {
         "sLengthMenu": "Tampilkan _MENU_ data per halaman",
@@ -74,7 +74,7 @@
         }
       },
       "ajax": {
-        "url": "{{ url_to('Identity::ajaxList') }}",
+        "url": "{{ url_to('Position::ajaxList') }}",
         "type": "POST",
         "async": true,
         "error": function (xhr, error, code) {

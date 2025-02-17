@@ -41,13 +41,17 @@ trait DataTablesTrait
       $i++;
     }
 
+
     // Handle ordering
-    if (isset($_POST['order'])) {
-      $this->builder->orderBy(
-        $column_order[$_POST['order']['0']['column']],
-        $_POST['order']['0']['dir']
-      );
-    } elseif (isset($order)) {
+    // sementara disable order by kolom terlebih dahulu
+    // if (isset($_POST['order'])) {
+    //   $this->builder->orderBy(
+    //     $column_order[$_POST['order']['0']['name']],
+    //     $_POST['order']['0']['dir']
+    //   );
+    // } else
+
+    if (isset($order)) {
       $this->builder->orderBy(key($order), $order[key($order)]);
     }
   }

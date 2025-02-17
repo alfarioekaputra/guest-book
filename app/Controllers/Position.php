@@ -17,8 +17,8 @@ class Position extends BaseController
   public function index()
   {
     $data = [
-      'new' => url_to('Identity::new'),
-      'store' => url_to('Identity::store')
+      'new' => url_to('Position::new'),
+      'store' => url_to('Position::store')
     ];
 
     return $this->twig->render('position/index', $data);
