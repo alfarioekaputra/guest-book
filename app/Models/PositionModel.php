@@ -18,7 +18,7 @@ class PositionModel extends Model
   protected $createdField     = 'created_at';
   protected $updatedField     = 'updated_at';
   protected $deletedField     = 'deleted_at';
-  protected $allowedFields    = ['name', 'slug'];
+  protected $allowedFields    = ['name', 'slug', 'created_at', 'updated_at'];
   protected $dateFormat       = 'datetime';
 
   public function getData()
@@ -81,6 +81,8 @@ class PositionModel extends Model
       $data['slug'] = $this->generateSlug($data['name']);
     }
 
+    $data['created_at'] = dateNow();
+
     return parent::insert($data, $returnID);
   }
 
@@ -90,6 +92,9 @@ class PositionModel extends Model
     if (is_array($data) && isset($data['name'])) {
       $data['slug'] = $this->generateSlug($data['name']);
     }
+
+    $data['updated_at'] = dateNow();
+
     return parent::update($id, $data);
   }
 }
