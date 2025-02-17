@@ -58,4 +58,15 @@ abstract class BaseController extends Controller
 
     $this->twig = new TwigLib();
   }
+
+  protected function displayError403()
+  {
+    return service('response')
+      ->setStatusCode(403)
+      ->setContentType('application/json')
+      ->setBody(json_encode([
+        'status' => 'error',
+        'message' => '403 Forbidden'
+      ]));
+  }
 }

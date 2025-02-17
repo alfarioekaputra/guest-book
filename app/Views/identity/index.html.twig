@@ -8,32 +8,24 @@
         Identitas
       </h2>
     </div>
+    {{ data.new }}
     <div class="col-auto ms-auto">
       <div class="btn-list">
-        <a href="{{ url_to('Identity::create')  }}" class="btn btn-primary d-none d-sm-inline-block">
+        <button type="button" class="btn btn-primary d-none d-sm-inline-block" onclick="openGlobalModal('{{ new }}', 'Tambah Data', '{{ store }}')">
           <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
             stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <path stroke="none" d="M0 0h24v24H0z" fill="none" />
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
-          Tambah Identitas
-        </a>
-        <a href="#" class="btn btn-primary d-sm-none btn-icon" data-bs-toggle="modal" data-bs-target="#modal-report"
-          aria-label="Create new report">
-          <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
-            stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-        </a>
+          Tambah
+        </button>
       </div>
     </div>
   </div>
 </div>
 <div class="table-responsive mt-5">
-  <table id="identity-table" class="table">
+  <table id="dataTable" class="table">
     <thead class="sticky-top">
       <tr>
         <th>NO</th>
@@ -62,7 +54,7 @@
       }
     });
 
-    var table = $('#identity-table').DataTable({
+    var table = $('#dataTable').DataTable({
       "processing": true,
       "serverSide": true,
       "ordering": true,
@@ -82,7 +74,7 @@
         }
       },
       "ajax": {
-        "url": "{{ site_url('admin/master/identity/ajaxList') }}",
+        "url": "{{ url_to('Identity::ajaxList') }}",
         "type": "POST",
         "async": true,
         "error": function (xhr, error, code) {
@@ -96,25 +88,26 @@
         "targets": [],
         "orderable": false,
       }],
-      "columns": [{
-        data: 'no'
-      },
-      {
-        data: 'name'
-      },
-      {
-        data: 'slug'
-      },
-      {
-        data: null,
-        render: function (data, type, row) {
-
-          return `
-                <a href="/reference/${row.id}/edit" class="btn btn-md btn-primary">Edit</a>
-                <a href="/reference/${row.id}/delete" class="btn btn-md btn-danger" onclick="return confirm('Yakin ingin menghapus?')">Delete</a>
-              `
+      "columns": [
+        {
+          data: 'no'
+        },
+        {
+          data: 'name'
+        },
+        {
+          data: 'slug'
+        },
+        {
+          data: null,
+          render: function (data, type, row) {
+            return renderActionButtons(
+              `{{ site_url('admin/master/identity') }}/${row.id}/edit`,
+              `{{ url_to('Identity::store') }}`,
+              `{{ site_url('admin/master/identity/') }}/${row.id}`
+            )
+          }
         }
-      }
       ]
     });
   });
