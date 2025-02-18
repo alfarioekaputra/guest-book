@@ -52,7 +52,7 @@ class Position extends BaseController
     }
 
     if ($this->request->isAJAX())
-      return $this->twig->render('identity/edit', $data);
+      return $this->twig->render('position/edit', $data);
 
     return $this->displayError403();
   }

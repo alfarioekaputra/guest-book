@@ -33,7 +33,7 @@ $(function() {
     $('#globalForm').on('submit', function(e) {
         e.preventDefault();
         
-         const csrfToken = $('meta[name="csrf-token"]').attr('content');
+        const csrfToken = $('meta[name="csrf-token"]').attr('content');
         var form = $(this);
         var url = form.attr('action');
         

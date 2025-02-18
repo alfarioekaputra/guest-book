@@ -11,7 +11,7 @@ RUN install-php-extensions \
     gd \
     exif
 
-# ENV SERVER_NAME=guest-book.test
+COPY ./Caddyfile /etc/caddy/Caddyfile
 
 # Set working directory
 WORKDIR /app
