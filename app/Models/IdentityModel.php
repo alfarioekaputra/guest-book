@@ -14,7 +14,7 @@ class IdentityModel extends Model
   protected $primaryKey       = 'id';
   protected $useAutoIncrement = true;
   protected $returnType       = 'array';
-  protected $useSoftDeletes   = false;
+  protected $useSoftDeletes   = true;
   protected $createdField     = 'created_at';
   protected $updatedField     = 'updated_at';
   protected $deletedField     = 'deleted_at';
@@ -81,6 +81,8 @@ class IdentityModel extends Model
       $data['slug'] = $this->generateSlug($data['name']);
     }
 
+    $data['created_at'] = dateNow();
+
     return parent::insert($data, $returnID);
   }
 
@@ -90,6 +92,9 @@ class IdentityModel extends Model
     if (is_array($data) && isset($data['name'])) {
       $data['slug'] = $this->generateSlug($data['name']);
     }
+
+    $data['updated_at'] = dateNow();
+
     return parent::update($id, $data);
   }
 }

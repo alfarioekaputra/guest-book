@@ -1,0 +1,39 @@
+<div class="row">
+    <div class="col-md-6 col-xl-12">
+        <input type="hidden" name="id" value="{{ item.id|default('') }}">
+        <input type="hidden" id="position_id" value="{{ item.position_id }}" />
+        <input type="hidden" id="status_employee" value="{{ item.status }}" />
+        <div class="mb-3">
+            <label class="form-label">Jabatan</label>
+            <select id='employeePosition' name="position_id" class="form-control">
+                <option value='0'>-- Pilih Jabatan--</option>
+                {% for option in options  %}
+                    <option value='{{ option.id }}'>{{ option.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Nama</label>
+            <input type="text" class="form-control" name="name" value="{{ item.name|default('') }}" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">No Handphone</label>
+            <input type="text" class="form-control" name="phone_number" value="{{ item.phone_number|default('') }}" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Alamat</label>
+            <input type="text" class="form-control" name="address" value="{{ item.address|default('') }}" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="text" class="form-control" name="email" value="{{ item.email|default('') }}" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select id="statusEmployee" class="form-control" name="status">
+                <option value="active">Aktif</option>
+                <option value="inactive">Non Aktif</option>
+            </select>
+        </div>
+    </div>
+</div>

@@ -12,6 +12,10 @@ $routes->group('admin', static function ($routes) {
   $routes->post('/user/store', 'User::store');
   $routes->post('user/ajaxList', 'User::ajaxList');
 
+  $routes->resource('employee');
+  $routes->post('employee/store', 'Employee::store');
+  $routes->post('employee/ajaxList', 'Employee::ajaxList');
+
   $routes->group('master', static function ($routes) {
     $routes->resource('position');
     $routes->post('position/store', 'Position::store');

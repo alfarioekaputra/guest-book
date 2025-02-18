@@ -1,7 +1,6 @@
 $(function() {
     // Function to open modal with form content
     window.openGlobalModal = function (url, title, submitUrl) {
-        console.log(url)
         $('#globalModalLabel').text(title);
         
         // Reset form and set the correct submit URL
@@ -17,7 +16,6 @@ $(function() {
         $('.simpan').removeClass("d-none");
         // Load form content
         $.get(url, function (data) {
-            console.log(data);
             if (data.success === false) {
                 $('#error-message').removeClass("d-none");
                 $('#error-message').text(data.message);

@@ -6,10 +6,10 @@ trait DataTablesTrait
 {
   protected $builder;
 
-  protected function getDataTablesQuery($table, $column_order, $column_search, $order, $joins = [])
+  protected function getDataTablesQuery($table, $column_select, $column_order, $column_search, $order, $joins = [])
   {
     $this->builder = $this->db->table($table);
-
+    $this->builder->select($column_select);
     // Handle joins if provided
     if (!empty($joins)) {
       foreach ($joins as $join) {
@@ -56,9 +56,9 @@ trait DataTablesTrait
     }
   }
 
-  public function getDataTables($table, $column_order, $column_search, $order, $data = '', $joins = [])
+  public function getDataTables($table, $column_select, $column_order, $column_search, $order, $data = '', $joins = [])
   {
-    $this->getDataTablesQuery($table, $column_order, $column_search, $order, $joins);
+    $this->getDataTablesQuery($table, $column_select, $column_order, $column_search, $order, $joins);
 
     // Handle pagination
     if (isset($_POST['length']) && $_POST['length'] != -1) {
@@ -76,9 +76,9 @@ trait DataTablesTrait
     return $this->builder->get()->getResult();
   }
 
-  public function countFiltered($table, $column_order, $column_search, $order, $data = '', $joins = [])
+  public function countFiltered($table, $column_select, $column_order, $column_search, $order, $data = '', $joins = [])
   {
-    $this->getDataTablesQuery($table, $column_order, $column_search, $order, $joins);
+    $this->getDataTablesQuery($table, $column_select, $column_order, $column_search, $order, $joins);
 
     if (!empty($data)) {
       $this->builder->where($data);
