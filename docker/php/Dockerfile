@@ -1,29 +1,42 @@
-FROM php:8.4-apache
+FROM dunglas/frankenphp:latest
 
-# Install extensions
-RUN apt-get update && apt-get install -y zlib1g-dev libicu-dev g++ git unzip libzip-dev
-RUN docker-php-ext-configure intl
-RUN docker-php-ext-install mysqli pdo pdo_mysql intl zip
+# Install required extensions and dependencies
+RUN install-php-extensions \
+    intl \
+    mysqli \
+    pdo \
+    pdo_mysql \
+    mbstring \
+    zip \
+    gd \
+    exif
 
-# Enable mod_rewrite
-RUN a2enmod rewrite
+# ENV SERVER_NAME=guest-book.test
 
-# Set document root ke folder public
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# Set working directory
+WORKDIR /app
+
+# Copy the CodeIgniter 4 application
+COPY . /app
+
+# Set permissions
+RUN chown -R www-data:www-data /app \
+    && chmod -R 755 /app/writable
+
+# Configure PHP
+RUN cp /app/env /app/.env \
+    && sed -i 's/CI_ENVIRONMENT = development/CI_ENVIRONMENT = development/' /app/.env \
+    && sed -i 's/# app.baseURL = ''/app.baseURL = https:\/\/guest-book.test/' /app/.env
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Set working directory
-WORKDIR /var/www/html
+# Update Composer and install dependencies
+RUN composer update \
+    && composer install --no-dev --optimize-autoloader
 
-# Copy project files
-COPY . .
+# Expose port for FrankenPHP
+EXPOSE 80
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html
-
-# Install Composer dependencies (jika ada composer.json)
-RUN if [ -f "composer.json" ]; then composer install --no-dev --optimize-autoloader; fi
+# Use the Caddyfile from the compose setup
+CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
