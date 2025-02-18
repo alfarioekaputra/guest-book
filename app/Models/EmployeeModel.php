@@ -17,12 +17,12 @@ class EmployeeModel extends Model
     protected $createdField     = 'created_at';
     protected $updatedField     = 'updated_at';
     protected $deletedField     = 'deleted_at';
-    protected $allowedFields    = ['jabatan_id', 'name', 'phone_number', 'address', 'email', 'status', 'created_at', 'updated_at'];
+    protected $allowedFields    = ['position_id', 'name', 'phone_number', 'address', 'email', 'status', 'created_at', 'updated_at'];
     protected $dateFormat       = 'datetime';
 
     public function getData()
     {
-        $column_select = "employees.id as id_employee, employees.name, employees.email, positions.name as position";
+        $column_select = "employees.id as id_employee, employees.name, employees.email, positions.name as position, employees.status";
         $column_order = ['employees.name'];
         $column_search = ['employees.name'];
         $order = ['employees.id' => 'ASC'];
@@ -58,6 +58,7 @@ class EmployeeModel extends Model
             $row['name'] = $item->name;
             $row['email'] = $item->email;
             $row['position'] = $item->position;
+            $row['status'] = $item->status;
             $data[] = $row;
         }
 

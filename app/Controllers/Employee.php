@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\EmployeeModel;
 use App\Models\PositionModel;
+use Exception;
 
 class Employee extends BaseController
 {
@@ -72,14 +73,99 @@ class Employee extends BaseController
         $position = new PositionModel();
         $data['options'] = $position->findAll();
 
-        // if ($this->request->isAJAX())
-        return $this->twig->render('employee/new', $data);
+        if ($this->request->isAJAX())
+            return $this->twig->render('employee/new', $data);
 
-        // return $this->displayError403();
+        return $this->displayError403();
+    }
+
+    public function edit($id)
+    {
+        $position = new PositionModel();
+        $data['options'] = $position->findAll();
+
+        $data['item'] = $this->model->find($id);
+
+        if (!$data['item']) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Data tidak ditemukan'
+            ]);
+        }
+
+        if ($this->request->isAJAX())
+            return $this->twig->render('employee/edit', $data);
+
+        return $this->displayError403();
     }
 
     public function store()
     {
-        //
+        $data = $this->request->getPost();
+
+        // Validasi data
+        $validation = \Config\Services::validation();
+        $validation->setRules([
+            'name' => 'required',
+            'position_id' => 'required',
+        ]);
+
+        if (!$validation->run($data)) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => $validation->getErrors()
+            ]);
+        }
+
+        // Simpan data
+        try {
+            if (!empty($data['id'])) {
+                // Update
+                $data['updated_at'] = dateNow();
+
+                $this->model->update($data['id'], $data);
+                $message = 'Data berhasil diupdate';
+            } else {
+                // Insert
+                $data['created_at'] = dateNow();
+
+                $this->model->insert($data);
+                $message = 'Data berhasil ditambahkan';
+            }
+
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => $message
+            ]);
+        } catch (\Exception $e) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Gagal menyimpan data: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function delete($id)
+    {
+        try {
+            $data = $this->model->find($id);
+
+            if ($data) {
+                // Hapus pengguna berdasarkan ID
+                $this->model->delete($id);
+
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => "Data berhasil dihapus"
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => "Gagal hapus data"
+                ]);
+            }
+        } catch (Exception $e) {
+            var_dump($e);
+        }
     }
 }
