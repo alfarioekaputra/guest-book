@@ -8,9 +8,14 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/', 'Home::index');
 
 $routes->group('admin', static function ($routes) {
+  $routes->get('dashboard', 'Dashboard::index');
+
   $routes->resource('user');
-  $routes->post('/user/store', 'User::store');
+  $routes->post('user/store', 'User::store');
   $routes->post('user/ajaxList', 'User::ajaxList');
+
+  $routes->resource('guest');
+  $routes->post('guest/ajaxList', 'Guest::ajaxList');
 
   $routes->resource('employee');
   $routes->post('employee/store', 'Employee::store');

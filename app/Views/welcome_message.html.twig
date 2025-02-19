@@ -1,4 +1,94 @@
-{% extends "layouts/app" %}
+{% extends "layouts/web" %}
 {% block content %}
-<h1>Welcome</h1>
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container text-center">
+        <h1 class="display-4 mb-4" data-aos="fade-up">Welcome to GuestBook</h1>
+        <p class="lead mb-5" data-aos="fade-up" data-aos-delay="200">Streamline your guest registration process with our elegant and efficient solution.</p>
+        <a href="#" class="btn btn-primary btn-lg" data-aos="fade-up" data-aos-delay="400">Get Started</a>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5" data-aos="fade-up">Key Features</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="text-center">
+                    <i class="fas fa-user-plus feature-icon"></i>
+                    <h3>Easy Registration</h3>
+                    <p>Quickly register guests with our intuitive interface.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="text-center">
+                    <i class="fas fa-chart-bar feature-icon"></i>
+                    <h3>Detailed Reports</h3>
+                    <p>Generate comprehensive reports on guest visits and trends.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="600">
+                <div class="text-center">
+                    <i class="fas fa-shield-alt feature-icon"></i>
+                    <h3>Secure Data</h3>
+                    <p>Keep your guest information safe with our secure system.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="py-5 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6" data-aos="fade-right">
+                <h2>Why Choose GuestBook?</h2>
+                <p>Our guest registration application offers a seamless experience for both hosts and visitors. With GuestBook, you can:</p>
+                <ul>
+                    <li>Customize registration forms to fit your needs</li>
+                    <li>Receive real-time notifications for new guest arrivals</li>
+                    <li>Integrate with your existing systems effortlessly</li>
+                    <li>Access your data from anywhere, anytime</li>
+                </ul>
+            </div>
+            <div class="col-md-6" data-aos="fade-left">
+                <img src="{{ base_url('images/about.png') }}" alt="About GuestBook" class="img-fluid rounded">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="cta-section py-5">
+    <div class="container text-center">
+        <h2 data-aos="fade-up">Ready to streamline your guest registration?</h2>
+        <p class="lead mb-4" data-aos="fade-up" data-aos-delay="200">Start your free trial today and experience the difference.</p>
+        <a href="#" class="btn btn-primary btn-lg" data-aos="fade-up" data-aos-delay="400">Get Started Now</a>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5" data-aos="fade-up">Contact Us</h2>
+        <div class="row">
+            <div class="col-md-6 mx-auto">
+                <form data-aos="fade-up" data-aos-delay="200">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Your Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" placeholder="Your Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" rows="5" placeholder="Your Message" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock content %}
