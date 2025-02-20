@@ -34,6 +34,7 @@
         <th>Menemui</th>
         <th>Identitas</th>
         <th>Keterangan</th>
+        <th>Foto</th>
         <th>Aksi</th>
       </tr>
     </thead>
@@ -112,6 +113,14 @@
         },
         {
           data: 'description'
+        },
+        {
+          data: 'photo',
+          render: function (data, type, row) {
+            var photo = row.photo.split("/").pop();
+            var name = '{{ base_url('guest/photo/')}}' + photo;
+            return '<img src="' + name + '" class="img-fluid rounded" style="width: 80px;" alt="Captured photo">'
+          }
         },
         {
           data: 'status',

@@ -1,23 +1,36 @@
 services:
-  php:
+  app_guestbook:
     build:
-      context: .
-      dockerfile: ./docker/php/Dockerfile
-    # uncomment the following line if you want to run this in a production environment
-    # restart: always
-    ports:
-      - "80:80" # HTTP
-      - "443:443" # HTTPS
-      - "443:443/udp" # HTTP/3
+      context: ./docker
+      dockerfile: Dockerfile
     volumes:
-      - ./:/app/
-      - ./certs:/etc/app/certs
-      - caddy_data:/data
-      - caddy_config:/config
-    # comment the following line in production, it allows to have nice human-readable logs in dev
-    tty: true
+      - .:/var/www/html
+    networks:
+      - traefik_network
+    labels:
+      - "traefik.enable=false"
     depends_on:
       - mysql
+  
+  server_guestbook:
+    image: nginx:alpine
+    container_name: server_guestbook
+    ports:
+      - "8081:80"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx:/etc/nginx/conf.d
+    networks:
+      - traefik_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.server_guestbook.rule=Host(`guest-book.test`)"
+      - "traefik.http.routers.server_guestbook.entrypoints=https"
+      - "traefik.http.routers.server_guestbook.tls=true"
+      - "traefik.http.routers.server_guestbook.service=server_guestbook@docker"
+      - "traefik.http.services.server_guestbook.loadbalancer.server.port=80"
+    depends_on:
+      - app_guestbook
 
   mysql:
     image: mariadb
@@ -31,8 +44,12 @@ services:
       - "3309:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - traefik_network
 
 volumes:
   mysql_data:
-  caddy_data:
-  caddy_config:
+
+networks:
+  traefik_network:
+    external: true

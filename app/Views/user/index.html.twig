@@ -110,8 +110,8 @@
           render: function (data, type, row) {
 
             return `
-                <a href="/user/${row.id}/edit" class="btn btn-md btn-primary">Edit</a>
-                <a href="/user/${row.id}/delete" class="btn btn-md btn-danger" onclick="return confirm('Yakin ingin menghapus?')">Delete</a>
+                <a href="/admin/user/${row.id}/edit" class="btn btn-md btn-primary">Edit</a>
+                <a href="/admin/user/${row.id}/delete" class="btn btn-md btn-danger" onclick="return confirm('Yakin ingin menghapus?')">Delete</a>
               `
           }
         }

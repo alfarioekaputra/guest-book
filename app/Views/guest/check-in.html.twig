@@ -1,0 +1,209 @@
+{% extends 'layouts/web' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row p-4">
+        <div id="statusMessage"></div>
+        <div class="col-md-6 mb-4">
+            <div class="check-in-form p-2">
+                <form id="guestCheckInForm">
+                    <div class="mb-3">
+                        <label for="guestName" class="form-label">Full Name</label>
+                        <input type="text" name="name" class="form-control" id="guestName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="guestEmail" class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" id="guestEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="guestPhone" class="form-label">Phone Number</label>
+                        <input type="tel" name="phone_number" class="form-control" id="guestPhone" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="visitPurpose" class="form-label">Purpose of Visit</label>
+                        <textarea name="description" class="form-control" id="visitPurpose" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="visitPurpose" class="form-label">Time of Visit</label>
+                        <input type="text" name="start_time" class="form-control timepicker" id="visitPurpose" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="personToMeet" class="form-label">Person to Meet</label>
+                        <select id='employeeList' name="employee_id" class="form-control">
+                            <option value='0'>-- Choose Person --</option>
+                            {% for option in employees  %}
+                                <option value='{{ option.id }}'>{{ option.name }} - {{ option.position }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="personToMeet" class="form-label">Identity Type</label>
+                        <select id='identityList' name="identity_id" class="form-control">
+                            <option value='0'>-- Choose Identity Type --</option>
+                            {% for option in identities  %}
+                                <option value='{{ option.id }}'>{{ option.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Check In</button>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="check-in-form p-4">
+                <h3 class="text-center mb-4">Capture Photo</h3>
+                <div class="webcam-container mb-3">
+                    <video id="videoElement" autoplay playsinline></video>
+                    <button id="captureButton" class="btn btn-primary"><i class="fas fa-camera"></i> Capture</button>
+                </div>
+                <canvas id="canvas" style="display: none;"></canvas>
+                <div id="photoContainer" class="text-center">
+                    <img id="photo" class="img-fluid rounded" style="display: none;" alt="Captured photo">
+                </div>
+                <button id="retakeButton" class="btn btn-secondary mt-3" style="display: none;">Capture Photo</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block javascript %}
+<script>
+    const video = document.getElementById('videoElement');
+    const canvas = document.getElementById('canvas');
+    const photo = document.getElementById('photo');
+    const captureButton = document.getElementById('captureButton');
+    const retakeButton = document.getElementById('retakeButton');
+    const photoContainer = document.getElementById('photoContainer');
+    const form = document.getElementById('guestCheckInForm');
+    const statusMessage = document.getElementById('statusMessage');
+    let stream;
+
+    $(document).ready(function() {
+        $('#employeeList').select2();
+        $('#identityList').select2();
+
+        $('.timepicker').timepicker({
+            timeFormat: 'H:mm',
+            interval: 60,
+            minTime: '09:00',
+            maxTime: '18:00',
+            defaultTime: '09:00',
+            startTime: '09:00',
+            dynamic: false,
+            dropdown: true,
+            scrollbar: true
+        });
+    });
+
+    async function startCamera() {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+        } catch (err) {
+            console.error("Error accessing the camera", err);
+            alert("Unable to access the camera. Please make sure you have given permission and that your camera is not being used by another application.");
+        }
+    }
+
+    function stopCamera() {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+    }
+
+    captureButton.addEventListener('click', function() {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        photo.src = canvas.toDataURL('image/png');
+        photo.style.display = 'block';
+        video.style.display = 'none';
+        captureButton.style.display = 'none';
+        retakeButton.style.display = 'block';
+        stopCamera();
+    });
+
+    retakeButton.addEventListener('click', function() {
+        photo.style.display = 'none';
+        video.style.display = 'block';
+        captureButton.style.display = 'block';
+        retakeButton.style.display = 'none';
+        startCamera();
+    });
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        // Here you would typically send the form data and the captured image to your server
+        
+        let photoData = canvas.toDataURL('image/jpeg');
+        // Check if photo was captured
+        if (!photoData) {
+            showStatus('Please capture a photo first', false);
+            return;
+        }
+
+        // Collect form data
+        const formData = new FormData(form);
+        formData.append('photo', photoData);
+
+        try {
+            const response = await fetch('{{ site_url('check-in/save') }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_hash() }}'
+                },
+                body: formData
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                showStatus('Data saved successfully!', true);
+                form.reset();
+                photoData = null;
+                photo.style.display = 'none';
+                video.style.display = 'block';
+                captureButton.style.display = 'block';
+                retakeButton.style.display = 'none';
+                startCamera();
+            } else {
+                if (result.errors) {
+                    showErrors(result.errors);
+                }
+                showStatus('Failed to save data: ' + result.message, false);
+            }
+        } catch (err) {
+            console.error('Error saving data: ' + err.message, false);
+        }
+    });
+
+    startCamera();
+
+    function showStatus(message, isSuccess) {
+        statusMessage.textContent = message;
+        statusMessage.className = 'status-message ' + (isSuccess ? 'success' : 'error');
+    }
+
+    function showErrors(errors) {
+        for (const [field, message] of Object.entries(errors)) {
+            const errorDiv = document.getElementById(field + 'Error');
+            if (errorDiv) {
+                errorDiv.textContent = message;
+            }
+        }
+    }
+
+    function clearErrors() {
+        const errorDivs = document.querySelectorAll('.error-text');
+        errorDivs.forEach(div => div.textContent = '');
+    }
+
+    // Clean up on page unload
+    window.addEventListener('beforeunload', () => {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+    });
+</script>
+{% endblock javascript %}

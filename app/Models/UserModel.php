@@ -26,6 +26,7 @@ class UserModel extends ShieldUserModel
 
   public function getData()
   {
+    $column_select = "*";
     $column_order = ['name'];
     $column_search = ['name'];
     $order = ['id' => 'DESC'];
@@ -48,6 +49,7 @@ class UserModel extends ShieldUserModel
 
     $list = $this->getDataTables(
       $this->table,
+      $column_select,
       $column_order,
       $column_search,
       $order,
@@ -70,6 +72,7 @@ class UserModel extends ShieldUserModel
       "recordsTotal" => $this->countAll($this->table, '', $joins),
       "recordsFiltered" => $this->countFiltered(
         $this->table,
+        $column_select,
         $column_order,
         $column_search,
         $order,

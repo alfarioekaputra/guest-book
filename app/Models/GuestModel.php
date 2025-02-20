@@ -26,7 +26,9 @@ class GuestModel extends Model
 
     public function getData()
     {
-        $column_select = "guests.id as id_guest, guests.guest_number, guests.phone_number, guests.start_time, guests.end_time, guests.photo, guests.name, guests.email, employees.name as employee, identities.name as identity, guests.status";
+        $request = \Config\Services::request();
+
+        $column_select = "guests.id as id_guest, guests.guest_number, guests.description, guests.phone_number, guests.start_time, guests.end_time, guests.photo, guests.name, guests.email, employees.name as employee, identities.name as identity, guests.status";
         $column_order = ['guests.name'];
         $column_search = ['guests.name', 'guests.guest_number', 'guests.phone_number', 'guests.start_time', 'guests.end_time', 'guests.email', 'employees.name', 'identities.name'];
         $order = ['guests.id' => 'ASC'];
@@ -70,6 +72,7 @@ class GuestModel extends Model
             $row['employee'] = $item->employee;
             $row['identity'] = $item->identity;
             $row['description'] = $item->description;
+            $row['photo'] = $item->photo;
             $row['status'] = $item->status;
             $data[] = $row;
         }
